@@ -11,6 +11,8 @@ class Message
 
     public function Message($data = array()) {
         $this->data = $data;
+
+        $this->data['message'] = utf8_encode($this->data['message']);
     }
 
     public function logIncomming() {
