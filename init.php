@@ -8,6 +8,7 @@
 require_once 'libloader.php';
 require_once 'config.php';
 
+LibLoader::load('lib/handlers');
 LibLoader::load('lib');
 
 Logger::addSubscriber(new FileSubscriber('fenris.log'));

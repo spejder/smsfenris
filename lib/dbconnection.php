@@ -18,17 +18,24 @@ class DBConnection extends mysqli
             return null;
         }
 
+        //Set char encoding
+        $conn->query("SET NAMES ". DBENCODING);
+
         $conn->autocommit(false);
         return $conn;
     }
 
     public function query($query, $resultmode = MYSQLI_STORE_RESULT)
     {
-        parent::query($query, $resultmode);
+        Logger::debug("DB Query '". $query. "'");
+        $res = parent::query($query, $resultmode);
 
         if ($this->errno) {
             Logger::error($this->error. '('. $this->errno. ')');
+            throw new Exception("DB error, see error log");
         }
+
+        return $res;
     }
 
 
