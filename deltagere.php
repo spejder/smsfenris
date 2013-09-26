@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 require_once 'init.php';
 
 $conn = DBConnection::get();
-$res = $conn->query("select * from personer where LOWER(funktion) = 'pl' group by patruljenummer");
+$res = $conn->query("select * from personer order by patruljenummer");
 
 if (!$res) die("Der opstod en fejl!");
 
@@ -20,7 +20,7 @@ require_once 'pagehead.php';
 </script>
 
 <p>
-<h1>Patruljer</h1>
+    <h1>Deltagere</h1>
 </p>
 
 <table id="sorted" class="tablesorter">
@@ -33,10 +33,13 @@ require_once 'pagehead.php';
             Patruljenavn
         </th>
         <th>
-            PL
+            Funktion
         </th>
         <th>
-            PL mobilnummer
+            Navn
+        </th>
+        <th>
+            Mobilnummer
         </th>
         <th>
             Tjek ind tidspunkt
@@ -54,6 +57,7 @@ require_once 'pagehead.php';
         echo '<tr>';
         echo '<td>' . $obj->patruljenummer . '</td>';
         echo '<td>' . $obj->patruljenavn . '</td>';
+        echo '<td>' . $obj->funktion . '</td>';
         echo '<td>' . $obj->personnavn . '</td>';
         echo '<td>' . $obj->mobilnummer . '</td>';
         echo '<td>' . $checkin . '</td>';
