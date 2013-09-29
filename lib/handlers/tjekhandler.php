@@ -7,7 +7,7 @@
 
 require_once 'handler.php';
 
-class TjekHandler implements Handler
+class TjekHandler extends Handler
 {
 
     public function handle(Message $m)
