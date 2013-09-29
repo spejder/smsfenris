@@ -72,7 +72,8 @@ class MessageParser
     private function initHandlers() {
         $this->handlers = array(
             'spejder fenris tjek' => new TjekHandler(),
-            'spejder fenris voksen' => new VoksenHandler()
+            'spejder fenris voksen' => new VoksenHandler(),
+            'spejder fenris voksne' => new VoksenHandler()
         );
     }
 
