@@ -20,7 +20,7 @@ require_once 'pagehead.php';
 </script>
 
 <p>
-    <h1>Deltagere</h1>
+    <h1>Team</h1>
 </p>
 
 <table id="sorted" class="tablesorter">
