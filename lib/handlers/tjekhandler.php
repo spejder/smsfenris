@@ -14,23 +14,27 @@ class TjekHandler extends Handler
     {
         try
         {
+
             $number = getDanishPhoneNumber($m->from());
+
             if ($number == null)
                 throw new InvalidArgumentException();
 
-            $personer = $this->findPersoner($number);
+            $afsender = $this->findPerson($number);
 
-            $this->markAsCheckedIn($personer);
-
-            $patruljeNavn = $personer[0]->patruljenavn;
-            $this->respond($m->from(), "Nu er $patruljeNavn tjekket ind.");
+            if ($afsender->patruljenummer > 0)
+                $this->doPatruljeCheckIn($m, $number);
+            else
+                $this->doVoksenCheckIn($afsender);
 
         } catch (InvalidArgumentException $e) {
-            $this->respond($m->from(), "Beklager! Vi kunne ikke finde din patrulje. Du skal være PL, PA eller PM for at tjekke ind.");
+            $this->respond($m->from(), "Beklager! Vi kunne ikke finde dig eller din patrulje. Du skal være PL, PA eller PM for at tjekke ind.");
         }
     }
 
-    private function respond($receiver, $body) {
+
+    private function respond($receiver, $body)
+    {
         $response = new Message();
         $response->to($receiver);
         $response->body($body);
@@ -39,12 +43,36 @@ class TjekHandler extends Handler
         $ms->send($response);
     }
 
-    private function findPersoner($from) {
+
+    private function findPerson($from)
+    {
 
         $conn = DBConnection::get();
         $from = $conn->real_escape_string($from);
 
-        Logger::info("Leder efter person med mobilnummer '". $from. "'");
+        Logger::info("Leder efter person med mobilnummer '" . $from . "'");
+
+        $result = $conn->query("select * from personer where mobilnummer = $from");
+
+        $res = null;
+
+        if ($result) {
+            $res = $result->fetch_object();
+        }
+
+        if (!$res)
+            throw new InvalidArgumentException();
+
+        return $res;
+    }
+
+    private function findPersoner($from)
+    {
+
+        $conn = DBConnection::get();
+        $from = $conn->real_escape_string($from);
+
+        Logger::info("Leder efter person med mobilnummer '" . $from . "'");
 
         $result = $conn->query("select * from personer where patruljenummer in (select patruljenummer from personer where mobilnummer = $from and (LOWER(funktion) = 'pm' or LOWER(funktion) = 'pl' or LOWER(funktion) = 'pa'))");
 
@@ -61,30 +89,48 @@ class TjekHandler extends Handler
             $result->close();
         }
 
-        Logger::debug("Antal personer fundet: ". count($personer));
+        Logger::debug("Antal personer fundet: " . count($personer));
 
         if (count($personer) < 1) {
             throw new InvalidArgumentException();
         }
 
-        Logger::debug("Fandt: ". print_r($personer, true));
+        Logger::debug("Fandt: " . print_r($personer, true));
 
         return $personer;
     }
 
-    private function markAsCheckedIn($personer) {
+    private function markAsCheckedIn($personer)
+    {
         $conn = DBConnection::get();
 
         $clause = '1 != 1';
         foreach ($personer as $p) {
-            $clause .= ' or personid = '. $p->personid;
+            $clause .= ' or personid = ' . $p->personid;
         }
 
-        Logger::debug("Konstrueret where clause: ". $clause);
+        Logger::debug("Konstrueret where clause: " . $clause);
 
-        $conn->query("update personer set tjekket = '". date('c'). "' where $clause");
+        $conn->query("update personer set tjekket = '" . date('c') . "' where $clause");
         $conn->commit();
     }
 
+    private function doPatruljeCheckIn(Message $m, $number)
+    {
+        $personer = $this->findPersoner($number);
+
+        $this->markAsCheckedIn($personer);
+
+        $patruljeNavn = $personer[0]->patruljenavn;
+        $this->respond($m->from(), "Nu er $patruljeNavn tjekket ind.");
+    }
+
+    private function doVoksenCheckIn($afsender)
+    {
+        $this->markAsCheckedIn(array($afsender));
+
+        $navn = $afsender->personnavn;
+        $this->respond($afsender->mobilnummer, "Nu er du, $navn, tjekket ind.");
+    }
 
 }
