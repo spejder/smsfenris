@@ -7,8 +7,8 @@
 
 class MessageSender
 {
-    const SEND_SMS_API = 'http://sms.dds.dk/rest/sendsms';
-    const API_KEY = 'fenris2013';
+    const SEND_SMS_API = SMS_API_URL;
+    const API_KEY = SMS_API_KEY;
     const SENDER = 'Fenris';
 
     public function send(Message $m) {
