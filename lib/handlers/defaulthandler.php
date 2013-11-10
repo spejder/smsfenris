@@ -19,6 +19,12 @@ class DefaultHandler extends Handler
         array_shift($parts); array_shift($parts); array_shift($parts);
         $besked = implode(" ", $parts);
 
+        if (is_numeric($funktion)) {
+            $forward = new AfstemningHandler();
+            $forward->handle($m);
+            return;
+        }
+
         if ($this->erBetroet(getDanishPhoneNumber($m->from()))) {
             $personer = $this->findFolkMedFunktion($funktion);
 

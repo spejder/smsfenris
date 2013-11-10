@@ -20,7 +20,7 @@ class AfstemningHandler extends Handler
                 throw new Exception();
 
             $parts = explode(" ", $m->body());
-            $vote = $parts[3];
+            $vote = $parts[2];
 
             $vote = $this->parseVote($vote);
             $poll = $this->findActivePoll();
@@ -28,7 +28,7 @@ class AfstemningHandler extends Handler
             $this->doVote($poll, $number, $vote, $m);
 
         } catch (InvalidArgumentException $e) {
-            $this->respond($m->from(), "Beklager! Vi kan ikke tage imod din stemme. Skriv spejder fenris afstemning [1-10]");
+            $this->respond($m->from(), "Beklager! Vi kan ikke tage imod din stemme. Skriv spejder fenris [1-10]");
         } catch (Exception $e) {
             $this->respond($m->from(), "Beklager! Der opstod en fejl i forbindelse med behandling af din stemme");
         }
@@ -83,7 +83,7 @@ class AfstemningHandler extends Handler
             $conn->query("insert into stemmer (afstemningid, afsender, stemme) VALUES ($poll, '$from', '$vote')");
             $conn->commit();
 
-            $this->respond($m->from(), "Tak for din stemme! Husk at du kun kan stemme én gang til denne afstemning.");
+            $this->respond($m->from(), "Tak for din stemme!");
         } catch (Exception $e) {
             $this->respond($m->from(), "Beklager! Vi kan ikke tage imod din stemme. Er du sikker på du ikke allerede har stemt?");
         }
