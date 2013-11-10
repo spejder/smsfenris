@@ -15,7 +15,18 @@ require_once 'pagehead.php';
 
 <script type="text/javascript">
     $(function () {
-        $("#sorted").tablesorter();
+        <?php
+           if (isset($_GET['order']) && strlen($_GET['order']) > 0) {
+               echo "$('#sorted').tablesorter({ sortList: [[". rawurldecode($_GET['order']). "]]});";
+            } else {
+               echo "$('#sorted').tablesorter();";
+           }
+       ?>
+
+        setTimeout(function() {
+            var sortOrder = $('#sorted').trigger('update')[0].config.sortList;
+            window.location = '?order=' + escape(sortOrder);
+        }, 10000);
     });
 </script>
 
