@@ -13,4 +13,4 @@ LibLoader::load('lib');
 
 Logger::addSubscriber(new FileSubscriber('fenris.log'));
 
-Logger::info("Initialized Fenris SMS application");
+Logger::debug("Initialized Fenris SMS application");
