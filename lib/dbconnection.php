@@ -38,5 +38,14 @@ class DBConnection extends mysqli
         return $res;
     }
 
+    public function getLastInsertId() {
+        $res = $this->query("SELECT LAST_INSERT_ID()");
+        if (!$res)
+            return -1;
+
+        $row = $res->fetch_array(MYSQL_NUM);
+        return $row[0];
+    }
+
 
 }

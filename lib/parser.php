@@ -73,7 +73,8 @@ class MessageParser
         $this->handlers = array(
             'spejder fenris tjek' => new TjekHandler(),
             'spejder fenris voksen' => new VoksenHandler(),
-            'spejder fenris voksne' => new VoksenHandler()
+            'spejder fenris voksne' => new VoksenHandler(),
+            'spejder fenris afstemning' => new AfstemningHandler()
         );
     }
 
