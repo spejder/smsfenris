@@ -6,13 +6,13 @@ error_reporting(E_ALL);
 require_once 'init.php';
 
 $conn = DBConnection::get();
-$res = $conn->query("select stemme, count(stemme) as antal from stemmer where afstemningid = (select id from afstemning where afsluttet IS NULL order by id desc limit 1) group by stemme");
+$res = $conn->query("select stemme, count(stemme) as antal from stemmer where afstemningid = (select id from afstemning where afsluttet IS NULL order by id desc limit 1) group by stemme order by stemme");
 
 if (!$res) die("Der opstod en fejl!");
 
 $stemmer = array();
 while ($obj = $res->fetch_object()) {
-    $stemmer[$obj->stemme] = intval($obj->antal);
+    $stemmer[intval($obj->stemme)] = intval($obj->antal);
 }
 
 Logger::info(print_r($stemmer, true));
@@ -69,13 +69,14 @@ require_once 'pagehead.php';
                 text: ''
             },
             xAxis: {
-                categories: [''],
+//                categories: [''],
                 labels: {
                     style: {
                         fontSize: '12pt',
                         fontWeight: 'bold'
                     }
-                }
+                },
+                type: 'category'
             },
             yAxis: {
                 min: 0,
